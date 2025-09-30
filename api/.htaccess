@@ -1,0 +1,16 @@
+# ----------------------------------------------------
+# BLOCK DIRECT ACCESS TO LARAVEL SOURCE CODE (MAX SECURITY)
+# This prevents users from accessing files like .env, vendor/, or storage/
+# ----------------------------------------------------
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # Deny all access to this directory. 
+    # The request should only ever come through the main /api/ rewrite.
+    RewriteRule ^(.*)$ - [F,L] 
+</IfModule>
+
+# Fallback (Deny from All is older but works on most hosts)
+<IfModule !mod_rewrite.c>
+    Deny from All
+</IfModule>

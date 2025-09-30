@@ -1,0 +1,39 @@
+<IfModule mod_rewrite.c>
+    # Ensure RewriteEngine is on
+    RewriteEngine On
+
+    # ----------------------------------------------
+    # 0. AUTH HEADER FIX (Crucial for Laravel/Passport on shared hosting)
+    # ----------------------------------------------
+    # Pass the Authorization header (used by Passport Bearer tokens) to PHP
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+    
+    # Optional: Pass X-XSRF-Token (If you ever switch to Sanctum/Session auth)
+    RewriteCond %{HTTP:x-xsrf-token} .
+    RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
+
+    # ----------------------------------------------
+    # 1. LARAVEL API ROUTING (Highest Priority)
+    # ----------------------------------------------
+    # Securely route ALL traffic starting with /api/ to Laravel's front controller (index.php)
+    # The [L] flag stops further processing.
+    RewriteRule ^api/(.*)$ api/public/index.php/$1 [L]
+    
+    # ----------------------------------------------
+    # 2. REACT SPA ROUTING (Fallback)
+    # ----------------------------------------------
+    
+    # Rule for the root directory (/) to load the React app
+    RewriteRule ^$ dist/index.html [L] 
+    
+    # Ignore the rewrite if the request is for a real existing file
+    RewriteCond %{REQUEST_FILENAME} !-f
+    # Ignore the rewrite if the request is for a real existing directory
+    RewriteCond %{REQUEST_FILENAME} !-d
+    
+    # All other non-file/non-directory requests (which are React Router paths) 
+    # are sent to the React index.html.
+    RewriteRule ^(.*)$ dist/index.html [L]
+
+</IfModule>
