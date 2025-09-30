@@ -1,0 +1,14 @@
+[phases.setup]
+# Using the 'packages' key is often a more direct way to force a package installation
+# than using 'nixPkgs' override. This should ensure Node.js 20 is installed.
+packages = ["nodejs_20"] 
+
+[phases.install]
+# Keeping 'npm ci' which is standard for deployment.
+cmds = ["npm ci"] 
+
+[phases.build]
+cmds = ["npm run build"]
+
+[start]
+cmd = "npx serve -s dist -l 3000"
